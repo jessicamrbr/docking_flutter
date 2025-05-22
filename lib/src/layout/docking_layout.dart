@@ -27,9 +27,10 @@ abstract class DockingArea extends Area {
       double? minimalSize})
       : super(
             size: size,
-            weight: weight,
-            minimalWeight: minimalWeight,
-            minimalSize: minimalSize);
+            // weight: weight,
+            // minimalWeight: minimalWeight,
+            // minimalSize: minimalSize
+          );
 
   final dynamic id;
 

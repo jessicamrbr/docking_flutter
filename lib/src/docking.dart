@@ -11,19 +11,23 @@ import 'package:multi_split_view/multi_split_view.dart';
 
 /// The docking widget.
 class Docking extends StatefulWidget {
-  const Docking(
-      {Key? key,
-      this.layout,
-      this.onItemSelection,
-      this.onItemClose,
-      this.itemCloseInterceptor,
-      this.dockingButtonsBuilder,
-      this.maximizableItem = true,
-      this.maximizableTab = true,
-      this.maximizableTabsArea = true,
-      this.antiAliasingWorkaround = true,
-      this.draggable = true})
-      : super(key: key);
+  const Docking({
+    Key? key,
+    this.layout,
+    this.onItemSelection,
+    this.onItemClose,
+    this.itemCloseInterceptor,
+    this.dockingButtonsBuilder,
+    this.maximizableItem = true,
+    this.maximizableTab = true,
+    this.maximizableTabsArea = true,
+    this.antiAliasingWorkaround = true,
+    this.draggable = true,
+    this.onDividerDragStart,
+    this.onDividerDragEnd,
+    this.onTabDragStart,
+    this.onTabDragEnd,
+  }) : super(key: key);
 
   final DockingLayout? layout;
   final OnItemSelection? onItemSelection;
@@ -35,6 +39,11 @@ class Docking extends StatefulWidget {
   final bool maximizableTabsArea;
   final bool antiAliasingWorkaround;
   final bool draggable;
+
+  final void Function()? onDividerDragStart;
+  final void Function()? onDividerDragEnd;
+  final void Function()? onTabDragStart;
+  final void Function()? onTabDragEnd;
 
   @override
   State<StatefulWidget> createState() => _DockingState();
@@ -97,16 +106,19 @@ class _DockingState extends State<Docking> {
   Widget _buildArea(BuildContext context, DockingArea area) {
     if (area is DockingItem) {
       return DockingItemWidget(
-          key: area.key,
-          layout: widget.layout!,
-          dragOverPosition: _dragOverPosition,
-          draggable: widget.draggable,
-          item: area,
-          onItemSelection: widget.onItemSelection,
-          itemCloseInterceptor: widget.itemCloseInterceptor,
-          onItemClose: widget.onItemClose,
-          dockingButtonsBuilder: widget.dockingButtonsBuilder,
-          maximizable: widget.maximizableItem);
+        key: area.key,
+        layout: widget.layout!,
+        dragOverPosition: _dragOverPosition,
+        draggable: widget.draggable,
+        item: area,
+        onItemSelection: widget.onItemSelection,
+        itemCloseInterceptor: widget.itemCloseInterceptor,
+        onItemClose: widget.onItemClose,
+        dockingButtonsBuilder: widget.dockingButtonsBuilder,
+        maximizable: widget.maximizableItem,
+        onTabDragStart: widget.onTabDragStart,
+        onTabDragEnd: widget.onTabDragEnd,
+      );
     } else if (area is DockingRow) {
       return _row(context, area);
     } else if (area is DockingColumn) {
@@ -114,16 +126,19 @@ class _DockingState extends State<Docking> {
     } else if (area is DockingTabs) {
       if (area.childrenCount == 1) {
         return DockingItemWidget(
-            key: area.key,
-            layout: widget.layout!,
-            dragOverPosition: _dragOverPosition,
-            draggable: widget.draggable,
-            item: area.childAt(0),
-            onItemSelection: widget.onItemSelection,
-            itemCloseInterceptor: widget.itemCloseInterceptor,
-            onItemClose: widget.onItemClose,
-            dockingButtonsBuilder: widget.dockingButtonsBuilder,
-            maximizable: widget.maximizableItem);
+          key: area.key,
+          layout: widget.layout!,
+          dragOverPosition: _dragOverPosition,
+          draggable: widget.draggable,
+          item: area.childAt(0),
+          onItemSelection: widget.onItemSelection,
+          itemCloseInterceptor: widget.itemCloseInterceptor,
+          onItemClose: widget.onItemClose,
+          dockingButtonsBuilder: widget.dockingButtonsBuilder,
+          maximizable: widget.maximizableItem,
+          onTabDragStart: widget.onTabDragStart,
+          onTabDragEnd: widget.onTabDragEnd,
+        );
       }
       return DockingTabsWidget(
           key: area.key,
@@ -136,7 +151,10 @@ class _DockingState extends State<Docking> {
           itemCloseInterceptor: widget.itemCloseInterceptor,
           dockingButtonsBuilder: widget.dockingButtonsBuilder,
           maximizableTab: widget.maximizableTab,
-          maximizableTabsArea: widget.maximizableTabsArea);
+          maximizableTabsArea: widget.maximizableTabsArea,
+          onTabDragStart: widget.onTabDragStart,
+          onTabDragEnd: widget.onTabDragEnd,
+        );
     }
     throw UnimplementedError(
         'Unrecognized runtimeType: ' + area.runtimeType.toString());
@@ -149,11 +167,14 @@ class _DockingState extends State<Docking> {
     });
 
     return MultiSplitView(
-        key: row.key,
-        children: children,
-        axis: Axis.horizontal,
-        controller: row.controller,
-        antiAliasingWorkaround: widget.antiAliasingWorkaround);
+      key: row.key,
+      children: children,
+      axis: Axis.horizontal,
+      controller: row.controller,
+      antiAliasingWorkaround: widget.antiAliasingWorkaround,
+      onDividerDragStart: widget.onDividerDragStart,
+      onDividerDragEnd: widget.onDividerDragEnd,
+    );
   }
 
   Widget _column(BuildContext context, DockingColumn column) {
@@ -163,11 +184,14 @@ class _DockingState extends State<Docking> {
     });
 
     return MultiSplitView(
-        key: column.key,
-        children: children,
-        axis: Axis.vertical,
-        controller: column.controller,
-        antiAliasingWorkaround: widget.antiAliasingWorkaround);
+      key: column.key,
+      children: children,
+      axis: Axis.vertical,
+      controller: column.controller,
+      antiAliasingWorkaround: widget.antiAliasingWorkaround,
+      onDividerDragStart: widget.onDividerDragStart,
+      onDividerDragEnd: widget.onDividerDragEnd,
+    );
   }
 
   void _forceRebuild() {

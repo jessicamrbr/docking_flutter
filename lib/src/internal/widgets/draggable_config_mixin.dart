@@ -7,21 +7,44 @@ import 'package:tabbed_view/tabbed_view.dart';
 /// Represents a draggable widget mixin.
 @internal
 mixin DraggableConfigMixin {
-  DraggableConfig buildDraggableConfig(
-      {required DragOverPosition dockingDrag, required TabData tabData}) {
+  DraggableConfig buildDraggableConfig({
+    required DragOverPosition dockingDrag, 
+    required TabData tabData,
+    void Function()? onTabDragStart,
+    void Function()? onTabDragEnd,
+  }) {
     DockingItem item = tabData.value;
     String name = item.name != null ? item.name! : '';
     return DraggableConfig(
-        feedback: buildFeedback(name),
-        dragAnchorStrategy: (Draggable<Object> draggable, BuildContext context,
-                Offset position) =>
-            Offset(20, 20),
-        onDragStarted: () {
-          dockingDrag.enable = true;
-        },
-        onDragCompleted: () {
-          dockingDrag.enable = false;
-        });
+      feedback: buildFeedback(name),
+      dragAnchorStrategy: (Draggable<Object> draggable, BuildContext context,
+              Offset position) =>
+          Offset(20, 20),
+      onDragStarted: () {
+        dockingDrag.enable = true;
+        if (onTabDragStart != null) {
+          try {
+            onTabDragStart();
+          } catch (e) {
+            // Handle any exceptions that occur during the callback
+            print('Error in onTabDragStart: $e');
+          }
+        }
+      },
+      onDragEnd: (detail) {
+        if (onTabDragEnd != null) {
+          try {
+            onTabDragEnd();
+          } catch (e) {
+            // Handle any exceptions that occur during the callback
+            print('Error in onTabDragEnd: $e');
+          }
+        }
+      },
+      onDragCompleted: () {
+        dockingDrag.enable = false;
+      }
+    );
   }
 
   Widget buildFeedback(String name) {

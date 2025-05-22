@@ -3,6 +3,7 @@ description: Flutter layout for placing widgets in docking areas and arrange the
 version: 1.16.1
 homepage: https://caduandrade.github.io/docking_flutter/
 repository: https://github.com/caduandrade/docking_flutter
+publish_to: none
 
 environment:
   sdk: ">=2.12.0 <4.0.0"
@@ -13,9 +14,12 @@ dependencies:
     sdk: flutter
   meta: ^1.7.0
   tabbed_view: '>=1.18.0 <1.19.0'
-    #path: ../tabbed_view/
-  multi_split_view: '>=2.4.0 <2.5.0'
-    #path: ../multi_split_view/
+  multi_split_view: 
+    git: 
+      url: https://github.com/jessicamrbr/multi_split_view.git
+      ref: custom
+    # path: ../multi_split_view
+    version: '>=2.4.0 <2.5.0'
 
 dev_dependencies:
   flutter_test:
@@ -27,7 +31,7 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
-flutter:
+# flutter:
 
   # To add assets to your package, add an assets section, like this:
   # assets:

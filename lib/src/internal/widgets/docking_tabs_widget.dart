@@ -16,19 +16,22 @@ import 'package:tabbed_view/tabbed_view.dart';
 
 /// Represents a widget for [DockingTabs].
 class DockingTabsWidget extends StatefulWidget {
-  DockingTabsWidget(
-      {Key? key,
-      required this.layout,
-      required this.dragOverPosition,
-      required this.dockingTabs,
-      this.onItemSelection,
-      this.onItemClose,
-      this.itemCloseInterceptor,
-      this.dockingButtonsBuilder,
-      required this.maximizableTab,
-      required this.maximizableTabsArea,
-      required this.draggable})
-      : super(key: key);
+  DockingTabsWidget({
+    Key? key,
+    required this.layout,
+    required this.dragOverPosition,
+    required this.dockingTabs,
+    this.onItemSelection,
+    this.onItemClose,
+    this.itemCloseInterceptor,
+    this.dockingButtonsBuilder,
+    required this.maximizableTab,
+    required this.maximizableTabsArea,
+    required this.draggable,
+    this.onTabDragStart,
+    this.onTabDragEnd,
+  })
+  : super(key: key);
 
   final DockingLayout layout;
   final DockingTabs dockingTabs;
@@ -40,6 +43,9 @@ class DockingTabsWidget extends StatefulWidget {
   final bool maximizableTabsArea;
   final DragOverPosition dragOverPosition;
   final bool draggable;
+
+  final void Function()? onTabDragStart;
+  final void Function()? onTabDragEnd;
 
   @override
   State<StatefulWidget> createState() => DockingTabsWidgetState();
@@ -110,7 +116,10 @@ class DockingTabsWidgetState extends State<DockingTabsWidget>
         onDraggableBuild: widget.draggable
             ? (TabbedViewController controller, int tabIndex, TabData tabData) {
                 return buildDraggableConfig(
-                    dockingDrag: widget.dragOverPosition, tabData: tabData);
+                  dockingDrag: widget.dragOverPosition, tabData: tabData,
+                  onTabDragStart: widget.onTabDragStart,
+                  onTabDragEnd: widget.onTabDragEnd,
+                );
               }
             : null,
         onTabClose: _onTabClose,
